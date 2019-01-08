@@ -111,7 +111,7 @@ func uploadData(w http.ResponseWriter, req *http.Request) {
 	parsedData := ExcelCsvParser(blobPath, extension)
 	parsedJson, _ := json.Marshal(parsedData)
 	fmt.Println(string(parsedJson))
-	err = ioutil.WriteFile("output.json", parsedJson, 0644)
+	err = ioutil.WriteFile("./output/output.json", parsedJson, 0644)
 	_ = err
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(parsedJson)

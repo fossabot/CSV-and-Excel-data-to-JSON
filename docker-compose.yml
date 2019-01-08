@@ -1,6 +1,9 @@
-version: "2"
+version: '3'
 services:
-  app:
-    image: golang:1.6.1-alpine
+  parser:
+    image: "dineshsonachalam1996/parser:1.0.0"
+    restart: always
+    ports:
+      - "8000:8000"
     volumes:
-      - .:/go/src/go-with-compose
+      - ./output:/go/src/app/output
