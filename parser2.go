@@ -101,19 +101,29 @@ func ExcelCsvParser(blobPath string, blobExtension string) (parsedData []map[str
 
 func uploadData(w http.ResponseWriter, req *http.Request) {
 	if req.Method == "GET" {
+		fmt.Println("GET")
 		        // GET
         t, _ := template.ParseFiles("./templates/index.html")
         t.Execute(w, nil)
 
 	} else if req.Method == "POST"{
-		fmt.Println("We have made a post request")
-		params := mux.Vars(req)
-		file, err := os.Create("./data/" + params["fileName"])
-		_, err = io.Copy(file, req.Body)
+		fmt.Println("POST")
+		file, handler, err := req.FormFile("uploadfile")
 		if err != nil {
 			log.Printf("Error while Posting data")
 		}
-		blobPath := "./data/" + params["fileName"]
+		defer file.Close()
+		f, err := os.OpenFile("./test/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+        if err != nil {
+            fmt.Println(err)
+            return
+        }
+        defer f.Close()
+ 
+        io.Copy(f, file)
+		blobPath := "./test/" + handler.Filename
+		fmt.Println("file:",file)
+		fmt.Println("handler:",handler.Filename)
 		var extension = filepath.Ext(blobPath)
 		parsedData := ExcelCsvParser(blobPath, extension)
 		parsedJson, _ := json.Marshal(parsedData)
@@ -122,6 +132,11 @@ func uploadData(w http.ResponseWriter, req *http.Request) {
 		_ = err
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(parsedJson)
+
+	} else {
+	
+        fmt.Println("Unknown HTTP " + req.Method + "  Method")
+    
 	}
 	
 }
