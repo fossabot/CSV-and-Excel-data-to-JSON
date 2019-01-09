@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -101,27 +100,41 @@ func ExcelCsvParser(blobPath string, blobExtension string) (parsedData []map[str
 
 func uploadData(w http.ResponseWriter, req *http.Request) {
 	if req.Method == "GET" {
-		        // GET
+		fmt.Println("GET")
         t, _ := template.ParseFiles("./templates/index.html")
         t.Execute(w, nil)
 
 	} else if req.Method == "POST"{
-		fmt.Println("We have made a post request")
-		params := mux.Vars(req)
-		file, err := os.Create("./data/" + params["fileName"])
-		_, err = io.Copy(file, req.Body)
+		fmt.Println("POST")
+		file, handler, err := req.FormFile("uploadfile")
 		if err != nil {
 			log.Printf("Error while Posting data")
 		}
-		blobPath := "./data/" + params["fileName"]
+		defer file.Close()
+		f, err := os.OpenFile("./data/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+        if err != nil {
+            fmt.Println(err)
+            return
+        }
+        defer f.Close()
+        io.Copy(f, file)
+		blobPath := "./data/" + handler.Filename
 		var extension = filepath.Ext(blobPath)
 		parsedData := ExcelCsvParser(blobPath, extension)
 		parsedJson, _ := json.Marshal(parsedData)
 		fmt.Println(string(parsedJson))
-		err = ioutil.WriteFile("./output/output.json", parsedJson, 0644)
-		_ = err
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(parsedJson)
+		err = os.Remove(blobPath)
+		if(err!=nil){
+			fmt.Println(err.Error())
+		}else{
+			fmt.Println("File has been deleted successfully.")
+		}
+		t, _ := template.ParseFiles("./templates/index.html")
+        t.Execute(w, string(parsedJson))
+	} else {
+	
+        fmt.Println("Unknown HTTP " + req.Method + "  Method")
+    
 	}
 	
 }
@@ -129,5 +142,7 @@ func uploadData(w http.ResponseWriter, req *http.Request) {
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/", uploadData)
+	//http.FileServer(http.Dir("./templates"))
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./templates/")))
 	log.Fatal(http.ListenAndServe(":8000", router))
 }

@@ -1,37 +1,98 @@
+<!doctype html>
 <html>
-	<head>
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
-		</script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
-	</head>
-	<body>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parser</title>
+<link rel="icon" href="./favicon.png" type="image/png">
+<link href="http://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.1.0.slim.min.js"></script>
+<script src="json-browse/jquery.json-browse.js"></script>
+<link href="json-browse/jquery.json-browse.css" type="text/css" rel="stylesheet" />
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
 
+<style type="text/css">
+        textarea#json-input {
+          width: 100%;
+          height: 200px;
+        }
+        .container { margin-top:150px;}
+        pre#json-renderer {
+          border: 1px solid #aaa;
+          padding: 0.5em 1.5em;
+          background-color:#fafafa;
+        }
+</style>
+</head>
+  <body>
+      <form enctype="multipart/form-data" action="/" method="post" >
+          <div class="input-group mb-3">
+              <div class="custom-file">
+                <input type="file" name="uploadfile" class="custom-file-input" id="inputGroupFile02">
+                <label class="custom-file-label" for="inputGroupFile02" aria-describedby="inputGroupFileAddon02">Choose file</label>
+              </div>
+              <div class="input-group-append">
+                <input class="input-group-text" id="inputGroupFileAddon02" type="submit"/>
+              </div>
+          </div>
+      </form> 
+     
+     
 
-<form enctype="multipart/form-data" action="/" method="post" >
-		<div class="input-group mb-3">
-			  <div class="custom-file">
-			    <input type="file" name="uploadfile" class="custom-file-input" id="inputGroupFile02">
-			    <label class="custom-file-label" for="inputGroupFile02" aria-describedby="inputGroupFileAddon02">Choose file</label>
-			  </div>
-			  <div class="input-group-append">
-			    <input class="input-group-text" id="inputGroupFileAddon02" type="submit"/>
-			  </div>
-		</div>
-</form>	
-		
+        <div class="container">
+          
 
-			
-	</body>
-	<script type="text/javascript">
-			$('.custom-file-input').on('change', function() { 
-				   let fileName = $(this).val().split('\\').pop(); 
-				   $(this).next('.custom-file-label').addClass("selected").html(fileName); 
-			});
-	</script>
-	
+          
+          <p id="btn-json-browse"></p>
+          <pre id="json-renderer" class="json-body">
+            
+                <textarea id="json-input" autocomplete="off" class="form-control">
+                   {{ . }}
+                </textarea>
 
-	
+          </pre>
+          </div>
+  </body>
 
+  
+  <script type="text/javascript">
+      // for upload function
+      $('.custom-file-input').on('change', function() { 
+           let fileName = $(this).val().split('\\').pop(); 
+           $(this).next('.custom-file-label').addClass("selected").html(fileName); 
+      });
+  </script>
+  <script>
+          $(function() {
+            $('#btn-json-browse').click(function() {
+              try {
+                var input = eval('(' + $('#json-input').val() + ')');
+              }
+              catch (error) {
+                //return alert("Cannot eval JSON: " + error);
+              }
+              var options = {
+                collapsed: $('#collapsed').is(':checked'),
+                withQuotes: $('#with-quotes').is(':checked')
+              };
+              $('#json-renderer').jsonBrowse(input, options);
+            });
+
+            // Display JSON sample on load
+            $('#btn-json-browse').click();
+          });
+        // check if text area is empty
+        if ($('#json-input').val().trim().length==0)
+        {
+            $('#json-renderer').hide();
+            console.log("Text area is empty");
+  
+        }else{
+            $("json-renderer").show();
+        }
+        console.log()
+    </script>
 </html>
