@@ -4,4 +4,5 @@ WORKDIR /go/src/app
 COPY get.sh /go/src/app
 RUN bash get.sh
 ENV PORT=8000
-CMD ["go", "run", "parser.go"]
+CMD ["go", "build", "parser.go"]
+CMD ["./parser"]
