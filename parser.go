@@ -109,28 +109,32 @@ func uploadData(w http.ResponseWriter, req *http.Request) {
 		file, handler, err := req.FormFile("uploadfile")
 		if err != nil {
 			log.Printf("Error while Posting data")
-		}
-		defer file.Close()
-		f, err := os.OpenFile("./data/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
-        if err != nil {
-            fmt.Println(err)
-            return
-        }
-        defer f.Close()
-        io.Copy(f, file)
-		blobPath := "./data/" + handler.Filename
-		var extension = filepath.Ext(blobPath)
-		parsedData := ExcelCsvParser(blobPath, extension)
-		parsedJson, _ := json.Marshal(parsedData)
-		fmt.Println(string(parsedJson))
-		err = os.Remove(blobPath)
-		if(err!=nil){
-			fmt.Println(err.Error())
+			t, _ := template.ParseFiles("./templates/index.html")
+        	t.Execute(w, nil)
 		}else{
-			fmt.Println("File has been deleted successfully.")
+			defer file.Close()
+			f, err := os.OpenFile("./data/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+		    if err != nil {
+		        fmt.Println(err)
+		        return
+		    }
+		    defer f.Close()
+			io.Copy(f, file)
+			blobPath := "./data/" + handler.Filename
+			var extension = filepath.Ext(blobPath)
+			parsedData := ExcelCsvParser(blobPath, extension)
+			parsedJson, _ := json.Marshal(parsedData)
+			fmt.Println(string(parsedJson))
+			err = os.Remove(blobPath)
+			if(err!=nil){
+				fmt.Println(err.Error())
+			}else{
+				fmt.Println("File has been deleted successfully.")
+			}
+			t, _ := template.ParseFiles("./templates/index.html")
+		    t.Execute(w, string(parsedJson))
 		}
-		t, _ := template.ParseFiles("./templates/index.html")
-        t.Execute(w, string(parsedJson))
+
 	} else {
 	
         fmt.Println("Unknown HTTP " + req.Method + "  Method")
