@@ -31,7 +31,7 @@
     <nav class="navbar navbar-light bg-light">
       <a class="navbar-brand" href="/">
        
-        Parser
+        Convert CSV, Excel data to JSON
       </a>
     </nav>
       
@@ -67,8 +67,19 @@
       // for upload function
       $('.custom-file-input').on('change', function() { 
            let fileName = $(this).val().split('\\').pop(); 
-           $(this).next('.custom-file-label').addClass("selected").html(fileName); 
+           $(this).next('.custom-file-label').addClass("selected").html(fileName);
+           // hide submit button if no file chosen 
+           if ($('.custom-file-input').get(0).files.length === 0){
+              console.log("No files selected.");
+              $("#inputGroupFileAddon02").hide();
+           }else{
+              console.log("Files has been selected.")
+              $("#inputGroupFileAddon02").show();
+          }
       });
+      $("#inputGroupFileAddon02").hide();
+      
+
   </script>
   <script>
           $(function() {
