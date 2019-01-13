@@ -107,18 +107,23 @@ func uploadData(w http.ResponseWriter, req *http.Request) {
 	} else if req.Method == "POST"{
 		fmt.Println("POST")
 		file, handler, err := req.FormFile("uploadfile")
+		defer file.Close()
 		if err != nil {
 			log.Printf("Error while Posting data")
 			t, _ := template.ParseFiles("./templates/index.html")
         	t.Execute(w, nil)
 		}else{
-			defer file.Close()
+			fmt.Println("error throws in else statement")
+			fmt.Println("handler.Filename",handler.Filename)
+			fmt.Printf("Type of handler.Filename:%T\n",handler.Filename)
+			fmt.Println("Length:",len(handler.Filename))
 			f, err := os.OpenFile("./data/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
-		    if err != nil {
-		        fmt.Println(err)
-		        return
-		    }
-		    defer f.Close()
+			if err != nil {
+			    fmt.Println("Error:",err)
+			    t, _ := template.ParseFiles("./templates/index.html")
+        		t.Execute(w, nil)
+			}
+			defer f.Close()
 			io.Copy(f, file)
 			blobPath := "./data/" + handler.Filename
 			var extension = filepath.Ext(blobPath)
@@ -132,16 +137,18 @@ func uploadData(w http.ResponseWriter, req *http.Request) {
 				fmt.Println("File has been deleted successfully.")
 			}
 			t, _ := template.ParseFiles("./templates/index.html")
-		    t.Execute(w, string(parsedJson))
+			t.Execute(w, string(parsedJson))
+		}
+	}else {
+        	log.Printf("Error while Posting data")
+			t, _ := template.ParseFiles("./templates/index.html")
+        	t.Execute(w, nil)
+    
 		}
 
-	} else {
+	} 
 	
-        fmt.Println("Unknown HTTP " + req.Method + "  Method")
-    
-	}
-	
-}
+
 
 func main() {
 	router := mux.NewRouter()
