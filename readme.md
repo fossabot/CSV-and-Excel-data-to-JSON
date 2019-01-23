@@ -2,6 +2,9 @@
 
 [![Build Status](https://api.travis-ci.com/dineshsonachalam/CSV-and-Excel-data-to-JSON.svg?branch=master)](https://travis-ci.com/dineshsonachalam/CSV-and-Excel-data-to-JSON)
 [![](https://goreportcard.com/badge/github.com/dineshsonachalam/CSV-and-Excel-data-to-JSON)](https://goreportcard.com/report/github.com/dineshsonachalam/CSV-and-Excel-data-to-JSON)
+[![](https://img.shields.io/docker/pulls/dineshsonachalam/parser.svg)](https://hub.docker.com/r/dineshsonachalam/parser)
+[![](https://img.shields.io/badge/python-3.5%20%7C%203.6%20%7C%203.7-blue.svg)](https://www.python.org/downloads/release/python-370/)
+[![](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/dineshsonachalam/CSV-and-Excel-data-to-JSON/blob/master/LICENSE)
 ### Running the application
 
 ```sh
