@@ -14,6 +14,7 @@ import (
 	"html/template"
 	"github.com/gorilla/mux"
 	"github.com/tealeg/xlsx"
+	"github.com/extrame/xls"
 	//"strings"
 )
 
@@ -82,6 +83,38 @@ func ReadXlsxFile(filePath string) []map[string]interface{} {
 	return parsedData
 }
 
+func ReadXlsFile(filePath string) []map[string]interface{} {
+	parsedData := make([]map[string]interface{}, 0, 0)
+	if xlFile, err := xls.Open(filePath, "utf-8"); err == nil {
+		total_sheets := xlFile.NumSheets()
+		for sheetCounter:=0;sheetCounter<total_sheets;sheetCounter++{
+			if sheet := xlFile.GetSheet(sheetCounter); sheet != nil {
+				header_name := list.New()
+				for rowCounter := 0; rowCounter <= (int(sheet.MaxRow)); rowCounter++ {
+			            row := sheet.Row(rowCounter)
+			            header_iterator := header_name.Front()
+			            var singleMap = make(map[string]interface{})
+			            for colCounter:=0; colCounter<(int(row.LastCol()));colCounter++{
+			            	if rowCounter == 0 {
+								text := row.Col(colCounter)
+								header_name.PushBack(text)
+							} else {
+								text := row.Col(colCounter)
+								singleMap[header_iterator.Value.(string)] = text
+								header_iterator = header_iterator.Next()
+							}
+			            }
+			            if rowCounter != 0 && len(singleMap) > 0 {
+							parsedData = append(parsedData, singleMap)
+						}
+			    }
+			}
+		}
+	}
+	fmt.Println("Length of parsedData:", len(parsedData))
+	return parsedData
+}
+
 func ExcelCsvParser(blobPath string, blobExtension string) (parsedData []map[string]interface{}) {
 	fmt.Println("---------------> We are in product.go")
 	if blobExtension == ".csv" {
@@ -93,6 +126,10 @@ func ExcelCsvParser(blobPath string, blobExtension string) (parsedData []map[str
 	} else if blobExtension == ".xlsx" {
 		fmt.Println("----------------We are parsing an xlsx file.---------------")
 		parsedData := ReadXlsxFile(blobPath)
+		return parsedData
+	} else if blobExtension == ".xls" {
+		fmt.Println("----------------We are parsing an xls file.---------------")
+		parsedData := ReadXlsFile(blobPath)
 		return parsedData
 	}
 	return parsedData
