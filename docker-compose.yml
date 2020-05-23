@@ -1,9 +1,7 @@
 version: '3'
 services:
   parser:
-    image: "dineshsonachalam/parser:1.0.0"
+    build: .
     restart: always
     ports:
       - "8000:8000"
-    volumes:
-      - ./output:/go/src/app/output

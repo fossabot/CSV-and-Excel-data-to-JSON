@@ -16,3 +16,6 @@ Now hit **localhost:8000** and you can see the application running.
 
 
 
+#### References:
+
+1. https://www.wolfe.id.au/2018/03/01/diving-into-vgo-from-the-golang-project/
